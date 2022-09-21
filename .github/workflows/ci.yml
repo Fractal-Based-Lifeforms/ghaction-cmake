@@ -44,31 +44,12 @@ jobs:
         variant:
           # Default
           - base: debian:bullseye
-            platform: 'linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64'
+            platform: 'linux/amd64'
             label: ''
           # Tag each platform:
           - base: debian:bullseye
-            platform: linux/386
-            label: -386
-          - base: debian:bullseye
             platform: linux/amd64
             label: -amd64
-          - base: debian:bullseye
-            platform: linux/arm/v6
-            label: -armv6
-          - base: debian:bullseye
-            platform: linux/arm/v7
-            label: -armv7
-          - base: debian:bullseye
-            platform: linux/arm64
-            label: -arm64
-          # Raspbian:
-          - base: lpenz/raspbian-buster-armhf
-            platform: linux/arm/v7
-            label: -raspbian-buster-armhf
-          - base: lpenz/raspbian-bullseye-armhf
-            platform: linux/arm/v7
-            label: -raspbian-bullseye-armhf
     steps:
       - uses: actions/checkout@v2
       - id: version
