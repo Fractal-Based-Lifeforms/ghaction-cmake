@@ -1,4 +1,4 @@
-ARG BASE=debian:bullseye
+ARG BASE=debian:sid
 FROM ${BASE}
 
 # install debian packages:
@@ -40,6 +40,7 @@ RUN set -e -x; \
         bison \
         build-essential \
         flex \
+        gi-docgen \
         git \
         libcairo2-dev \
         libcurl4-openssl-dev \
