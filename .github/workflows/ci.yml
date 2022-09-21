@@ -20,7 +20,7 @@ jobs:
             - clang-sanitize-dataflow
             - clang-sanitize-safe-stack
             - valgrind
-            - cpack
+            # - cpack fails due to unspecified package version
             - coverage
     runs-on: ubuntu-latest
     steps:
@@ -44,7 +44,7 @@ jobs:
         variant:
           - base: debian:bullseye
             platform: linux/amd64
-            label: v0.19-gstreamer
+            label: 0.19-gstreamer
     steps:
       - uses: actions/checkout@v2
       - id: version
@@ -55,10 +55,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-        if: ${{ steps.version.outputs.version_docker_ci != 'null' }}
       - uses: docker/build-push-action@v2
         with:
           build-args: BASE=${{ matrix.variant.base }}
-          push: ${{ steps.version.outputs.version_docker_ci != 'null' }}
+          push: true
           platforms: ${{ matrix.variant.platform }}
-          tags: ${{ github.repository }}:${{ steps.version.outputs.version_docker_ci }}${{ matrix.variant.label }}
+          tags: fractalbasedlifeforms/ghaction-cmake:${{ matrix.variant.label }}

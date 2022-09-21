@@ -26,12 +26,6 @@ RUN set -e -x; \
 # ctest -D ExperimentalMemCheck; may not work in all architectures
 RUN apt-get install -y --no-install-recommends valgrind || true
 
-# setup su for dep installation
-RUN sed -i '/pam_rootok.so$/aauth sufficient pam_permit.so' /etc/pam.d/su
-
-ADD entrypoint /usr/local/bin/entrypoint
-CMD ["/usr/local/bin/entrypoint"]
-
 # install build dependencies for gstreamer:
 RUN set -e -x; \
     echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries; \
@@ -91,3 +85,9 @@ RUN set -e -x; \
     ninja install -C build; \
     cd $HOME; \
     rm -rf /work/
+
+# setup su for dep installation
+RUN sed -i '/pam_rootok.so$/aauth sufficient pam_permit.so' /etc/pam.d/su
+
+ADD entrypoint /usr/local/bin/entrypoint
+CMD ["/usr/local/bin/entrypoint"]
