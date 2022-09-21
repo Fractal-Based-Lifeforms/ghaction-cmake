@@ -42,14 +42,9 @@ jobs:
     strategy:
       matrix:
         variant:
-          # Default
-          - base: debian:bullseye
-            platform: 'linux/amd64'
-            label: ''
-          # Tag each platform:
           - base: debian:bullseye
             platform: linux/amd64
-            label: -amd64
+            label: v0.19-gstreamer
     steps:
       - uses: actions/checkout@v2
       - id: version
