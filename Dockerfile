@@ -64,7 +64,7 @@ RUN set -e -x; \
     git remote add origin https://gitlab.freedesktop.org/gstreamer/gstreamer.git; \
     git fetch origin $GSTREAMER_COMMIT_HASH; \
     git reset --hard FETCH_HEAD; \
-    meson build --prefix=/usr -Dbuildtype=release \
+    meson setup --prefix=/usr -Dbuildtype=release \
         -Dbad=enabled \
         -Dbase=enabled \
         -Ddevtools=disabled \
@@ -84,6 +84,8 @@ RUN set -e -x; \
         -Dugly=enabled \
         -Dgst-plugins-base:gl=disabled \
         -Dgst-plugins-bad:gl=disabled \
+        /work/gstreamer/build \
+        /work/gstreamer/; \
     ninja -C build; \
     ninja install -C build; \
     cd $HOME; \
