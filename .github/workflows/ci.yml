@@ -51,9 +51,14 @@ jobs:
     strategy:
       matrix:
         variant:
-          - base: debian:bullseye
+          - base: debian:sid
             platform: linux/amd64
-            label: 0.19-gstreamer
+            label: main-gstreamer
+            gstreamer-commit: d75a69ec951949962ee5a3df3f136452e8712a88
+          - base: debian:sid
+            platform: linux/amd64
+            label: main-gstreamer-d75a69ec951949962ee5a3df3f136452e8712a88
+            gstreamer-commit: d75a69ec951949962ee5a3df3f136452e8712a88
     steps:
       - uses: actions/checkout@v2
       - id: version
@@ -66,7 +71,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - uses: docker/build-push-action@v2
         with:
-          build-args: BASE=${{ matrix.variant.base }}
+          build-args: BASE=${{ matrix.variant.base }} GSTREAMER_COMMIT_HASH=${{ matrix.variant.gstreamer-commit }}
           push: true
           platforms: ${{ matrix.variant.platform }}
           tags: fractalbasedlifeforms/ghaction-cmake:${{ matrix.variant.label }}
