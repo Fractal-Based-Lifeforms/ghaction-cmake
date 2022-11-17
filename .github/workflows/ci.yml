@@ -1,17 +1,17 @@
 ---
 name: CI
-on: [ push, pull_request ]
+on: [ workflow_dispatch, push, pull_request ]
 jobs:
   omnilint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: docker://lpenz/omnilint:v0.2
+      - uses: actions/checkout@v3.1.0
+      - uses: docker://lpenz/omnilint:0.5
   pytest:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v3
+      - uses: actions/checkout@v3.1.0
+      - uses: actions/setup-python@v4.3.0
       - name: Install pytest
         run: python -m pip install pytest
       - run: pytest
@@ -34,10 +34,10 @@ jobs:
             - cmake
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
         with:
           path: ghaction-cmake
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
         with:
           repository: lpenz/execpermfix
           path: execpermfix
@@ -46,7 +46,7 @@ jobs:
         with:
           preset: ${{ matrix.preset }}
           working-directory: execpermfix
-  dockerhub:
+  publish-dockerhub:
     needs: [ omnilint, test ]
     runs-on: ubuntu-latest
     strategy:
@@ -55,18 +55,19 @@ jobs:
           - base: debian:sid
             platform: linux/amd64
             label: main-gstreamer
-            gstreamer-commit: d75a69ec951949962ee5a3df3f136452e8712a88
+            gstreamer-commit: 433301d0e5dde331c7081df7b94cef6650dc83ff
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
       - id: version
-        uses: docker://lpenz/ghaction-version-gen:0.7
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-      - uses: docker/login-action@v1
+        uses: docker://lpenz/ghaction-version-gen:0.11.0
+      - uses: docker/setup-qemu-action@v2.1.0
+      - uses: docker/setup-buildx-action@v2.2.1
+      - uses: docker/login-action@v2.1.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/build-push-action@v2
+        if: ${{ steps.version.outputs.version_docker_ci != 'null' }}
+      - uses: docker/build-push-action@v3.2.0
         with:
           build-args: |
             BASE=${{ matrix.variant.base }}

@@ -15,17 +15,20 @@ RUN set -e -x; \
         curl lcov \
         # clang
         clang clang-tidy clang-format \
-        # C/C++ linters \
+        # C/C++ linters
         cppcheck iwyu \
         # used by clang-format
         git \
         # cpack
         file dpkg-dev \
         # base system (su)
-        util-linux
-
-# ctest -D ExperimentalMemCheck; may not work in all architectures
-RUN apt-get install -y --no-install-recommends valgrind || true
+        util-linux; \
+    # ctest -D ExperimentalMemCheck; may not work in all architectures
+    apt-get install -y --no-install-recommends valgrind || true; \
+    # setup su for dep installation
+    sed -i '/pam_rootok.so$/aauth sufficient pam_permit.so' /etc/pam.d/su; \
+    # make git trust all directories to avoid issues in CI
+    git config --system --add safe.directory '*'
 
 # install build dependencies for gstreamer:
 RUN set -e -x; \
@@ -50,7 +53,7 @@ RUN set -e -x; \
         pkg-config
 
 # specify the commit of gstreamer to build:
-ARG GSTREAMER_COMMIT_HASH=d75a69ec951949962ee5a3df3f136452e8712a88
+ARG GSTREAMER_COMMIT_HASH=433301d0e5dde331c7081df7b94cef6650dc83ff
 
 # build and install gstreamer from gitlab upstream:
 RUN set -e -x; \
@@ -86,9 +89,6 @@ RUN set -e -x; \
     ninja install -C build; \
     cd $HOME; \
     rm -rf /work/
-
-# setup su for dep installation
-RUN sed -i '/pam_rootok.so$/aauth sufficient pam_permit.so' /etc/pam.d/su
 
 ADD entrypoint /usr/local/bin/entrypoint
 CMD ["/usr/local/bin/entrypoint"]
